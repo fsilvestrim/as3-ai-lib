@@ -3,7 +3,7 @@
  * >author		Filipe Silvestrim
  */
 
-package minimax
+package com.filipesilvestrim.ai.minimax
 {
 	import game.controllers.game.GameplayController;
 	import game.core.Board;

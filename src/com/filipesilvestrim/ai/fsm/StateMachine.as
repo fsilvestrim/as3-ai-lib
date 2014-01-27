@@ -5,7 +5,7 @@
  * Time: 21:34
  * To change this template use File | Settings | File Templates.
  */
-package fsm {
+package com.filipesilvestrim.ai.fsm {
 import avmplus.getQualifiedClassName;
 
 import flash.utils.Dictionary;

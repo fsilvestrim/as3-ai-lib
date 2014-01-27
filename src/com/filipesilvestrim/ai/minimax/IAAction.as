@@ -4,7 +4,7 @@
  * >version		<version>
  */
 
-package minimax
+package com.filipesilvestrim.ai.minimax
 {
 
 	public interface IAAction 

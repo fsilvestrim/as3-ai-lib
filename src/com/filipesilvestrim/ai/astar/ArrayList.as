@@ -1,4 +1,4 @@
-package 
+package com.filipesilvestrim.ai.astar
 {
 	import flash.utils.Dictionary;
 	/**

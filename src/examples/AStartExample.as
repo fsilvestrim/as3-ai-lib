@@ -1,5 +1,6 @@
-package  
+package examples
 {
+import com.filipesilvestrim.ai.astar.*;
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
 	import flash.utils.Dictionary;

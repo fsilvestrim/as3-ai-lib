@@ -3,8 +3,9 @@
  * >author		Filipe Silvestrim
  */
 
-package minimax
+package com.filipesilvestrim.ai.minimax
 {
+import minimax.*;
 	import com.w3haus.utils.ArrayUtil;
 	
 	import de.polygonal.ds.HashMap;

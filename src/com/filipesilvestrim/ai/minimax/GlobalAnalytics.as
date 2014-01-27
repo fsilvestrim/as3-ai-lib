@@ -4,8 +4,9 @@
  * >version		<version>
  */
 
-package minimax
+package com.filipesilvestrim.ai.minimax
 {
+import minimax.*;
 	import game.core.Globals;
 	import game.models.CardModel;
 	
@@ -39,7 +40,7 @@ package minimax
 		/**
 		 * 
 		 * @param	piece
-		 * @return IAAction
+		 * @return com.filipesilvestrim.ai.minimax.IAAction
 		 */
 		public function attack( piece : Object ) : Object
 		{

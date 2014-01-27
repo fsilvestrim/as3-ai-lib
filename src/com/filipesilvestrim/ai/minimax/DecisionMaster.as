@@ -4,8 +4,9 @@
  * >version		<version>
  */
 
-package minimax
+package com.filipesilvestrim.ai.minimax
 {
+import minimax.*;
 	import game.controllers.game.GameIAController;
 	import game.core.Board;
 	import game.core.Globals;

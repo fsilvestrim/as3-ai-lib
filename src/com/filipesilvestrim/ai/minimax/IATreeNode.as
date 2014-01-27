@@ -5,8 +5,9 @@
  */
 
 
-package minimax
+package com.filipesilvestrim.ai.minimax
 {
+import minimax.*;
 	import de.polygonal.ds.TreeNode;
 	import game.controllers.game.GameIAController;
 	import game.core.Board;
