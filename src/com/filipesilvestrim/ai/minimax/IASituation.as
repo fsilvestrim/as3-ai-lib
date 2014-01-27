@@ -6,9 +6,7 @@
 
 package com.filipesilvestrim.ai.minimax
 {
-import minimax.*;
-
-	public interface IASituation 
+public interface IASituation
 	{
 		function evaluate( node : IATreeNode ) : Object;
 	}

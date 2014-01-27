@@ -6,13 +6,7 @@
 
 package com.filipesilvestrim.ai.minimax
 {
-import minimax.*;
-	import game.controllers.game.GameIAController;
-	import game.core.Board;
-	import game.core.Globals;
-	import game.models.CardModel;
-	
-	public class DecisionMaster 
+public class DecisionMaster
 	{
 		// ___________________________________________________________________ CONSTANTS
 		
@@ -49,7 +43,7 @@ import minimax.*;
 		 * @param	turnPlay
 		 * @return 	{piece, x, y, weight}
 		 */
-		public function evaluate ( playList : Array, board : Board ) : Object
+		public function evaluate ( playList : Array, board : Object ) : Object
 		{
 			var sortedArray		: Array  	= playList.sortOn("weight", Array.NUMERIC | Array.DESCENDING);
 			var betterChoise	: Object	= sortedArray.shift();
@@ -61,12 +55,12 @@ import minimax.*;
 		}
 		
 		// ___________________________________________________________________ PRIVATE METHODS
-		private function validPlay ( actualPlay : Object, board : Board) : Boolean
+		private function validPlay ( actualPlay : Object, board : Object) : Boolean
 		{
 			var isValidPlay		: Boolean 	= false;
 			var play 			: Object 	= actualPlay;
-			var clonedBoard 	: Board		= board.deepClone(); 
-			var card			: CardModel = CardModel(play.piece);
+			var clonedBoard 	: Object		= board.deepClone();
+			var card			: Object = Object(play.piece);
 			var arrPossibleMov	: Array;
 			
 			//is the stronger character? 
@@ -172,10 +166,10 @@ import minimax.*;
 			
 //			isValidPlay = !returnPossibleThreat && ((returnNearEnenmy || returnAttack) || returnMemory && returnGroups && retunFar);
 
-			if (GameIAController.getInstance().ia.maxDepth == Globals.IA_DUMMIE)
-				isValidPlay = (isNowOrNever || ((returnAttack || returnMemory)) && (returnMoveMimet || !returnPossibleThreat && (returnNearEnenmy || returnGroups || retunFar)));
-			else
-				isValidPlay = (returnAttack || returnMemory) && (returnMoveMimet && !returnPossibleThreat && (returnNearEnenmy || returnGroups && retunFar));
+//			if (GameIAController.getInstance().ia.maxDepth == Globals.IA_DUMMIE)
+//				isValidPlay = (isNowOrNever || ((returnAttack || returnMemory)) && (returnMoveMimet || !returnPossibleThreat && (returnNearEnenmy || returnGroups || retunFar)));
+//			else
+//				isValidPlay = (returnAttack || returnMemory) && (returnMoveMimet && !returnPossibleThreat && (returnNearEnenmy || returnGroups && retunFar));
 				
 //			isValidPlay = returnMoveMimet && !returnPossibleThreat && ((returnNearEnenmy || returnAttack) || returnMemory && returnGroups && retunFar);
 //			else if (GameIAController.getInstance().ia.maxDepth == Globals.IA_MEDIUM)

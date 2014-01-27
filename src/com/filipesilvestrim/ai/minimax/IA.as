@@ -5,22 +5,7 @@
 
 package com.filipesilvestrim.ai.minimax
 {
-import minimax.*;
-	import com.w3haus.utils.ArrayUtil;
-	
-	import de.polygonal.ds.HashMap;
-	import de.polygonal.ds.TreeIterator;
-	import de.polygonal.ds.TreeNode;
-	
-	import game.controllers.game.GameplayController;
-	import game.controllers.game.InfoController;
-	import game.core.Board;
-	import game.core.Globals;
-	import game.core.Warland;
-	import game.events.BoardEvent;
-	import game.models.CardModel;
-	
-	public class IA 
+public class IA
 	{
 		// ___________________________________________________________________ CONSTANTS
 		public static const ACTION_START_TURN		 	: String = "ia_action_str";
@@ -31,7 +16,7 @@ import minimax.*;
 		public static const MAX 	: int = 2;
 		
 		// ___________________________________________________________________ CLASS PROPERTIES
-		private var _maxDepth			: int			= Globals.IA_DUMMIE;
+		private var _maxDepth			: int			= -1;
 		private var _startPlayerId		: int;
 		
 		//distribut attributes
@@ -43,9 +28,9 @@ import minimax.*;
 		// ___________________________________________________________________ INSTANCE PROPERTIES
 		private var _player1Analysis	: Analytics;
 		private var _player2Analysis	: Analytics;
-		private var _board				: Board;
-		private var _hashActions		: HashMap;
-		private var _gameRef			: Warland;
+		private var _board				: Object;
+		private var _hashActions		: Object;
+		private var _gameRef			: Object;
 		
 		// ___________________________________________________________________ GETTERS AND SETTERS		
 		/**
@@ -55,7 +40,7 @@ import minimax.*;
 		{ 
 			var analysis : Analytics = _player1Analysis;
 			
-			if (_startPlayerId != Globals.ID_PLAYER_ONE)
+			if (_startPlayerId != -1)
 			{
 				analysis = _player2Analysis;
 			}
@@ -70,7 +55,7 @@ import minimax.*;
 		{ 
 			var analysis : Analytics = _player2Analysis;
 			
-			if (_startPlayerId != Globals.ID_PLAYER_ONE)
+			if (_startPlayerId != -1)
 			{
 				analysis = _player1Analysis;
 			}
@@ -87,8 +72,8 @@ import minimax.*;
 			_maxDepth = value;
 		}
 		
-		public function get board():Board { return _board; }
-		public function set board(value:Board):void 
+		public function get board():Object { return _board; }
+		public function set board(value:Object):void
 		{
 			_board = value;
 			
@@ -99,7 +84,7 @@ import minimax.*;
 			_player2Analysis.update();
 		}
 		
-		public function set gameRef(value:Warland):void 
+		public function set gameRef(value:Object):void
 		{
 			_gameRef = value;
 		}
@@ -107,9 +92,9 @@ import minimax.*;
 		// ___________________________________________________________________ CONSTRUCTOR
 		public function IA ()
 		{
-			_player1Analysis				= new Analytics( "PLAYER 1", Globals.ID_PLAYER_ONE);
-			_player2Analysis				= new Analytics( "PLAYER 2", Globals.ID_PLAYER_TWO);
-			_hashActions					= new HashMap();
+			_player1Analysis				= new Analytics( "PLAYER 1", -1);
+			_player2Analysis				= new Analytics( "PLAYER 2", -2);
+			_hashActions					= new Object();
 			
 			_player1Analysis.globalAnalytics.defineSides(_player1Analysis, _player2Analysis);
 			_player2Analysis.globalAnalytics.defineSides(_player2Analysis, _player1Analysis);
@@ -121,51 +106,52 @@ import minimax.*;
 		// ___________________________________________________________________ PUBLIC METHODS		
 		public function minimax () : Object
 		{
-			_startPlayerId					= GameplayController.getInstance().getActualPlayer();
-			board 							= GameplayController.getInstance().game.board.deepClone();
+//			_startPlayerId					= GameplayController.getInstance().getActualPlayer();
+//			board 							= GameplayController.getInstance().game.board.deepClone();
 			playerAnalysis.update();
 			enemyAnalysis.update();
 			
-			var tree : TreeNode = new TreeNode(new IATreeNode( ACTION_START_TURN , getPlayerAnalytics(MAX), getPlayerAnalytics(MAX, true)));
-			minimaxValues(tree, MAX)
+//			var tree : TreeNode = new TreeNode(new IATreeNode( ACTION_START_TURN , getPlayerAnalytics(MAX), getPlayerAnalytics(MAX, true)));
+//			minimaxValues(tree, MAX)
 			
-			TreeIterator.preorder(tree, cleanWeights);
-			TreeIterator.postorder(tree, processNodeWeights);
+//			TreeIterator.preorder(tree, cleanWeights);
+//			TreeIterator.postorder(tree, processNodeWeights);
 			//trace(tree.dump());
 			
-			return IATreeNode(tree.data);
+//			return IATreeNode(tree.data);
+            return null;
 		}
 		
-		public function chooseAttribute (iaCard : CardModel, enemyCard : CardModel) : String
+		public function chooseAttribute (iaCard : Object, enemyCard : Object) : String
 		{
 			var attribute : String = "";
 			
 			if (enemyCard.wasAttackShowed) 			
 			{
-				if (iaCard.attack > enemyCard.attack) { attribute = Globals.ATTACK; return attribute;} 
+				if (iaCard.attack > enemyCard.attack) { attribute = 'ATTACK'; return attribute;}
 			}
 				
 			if (enemyCard.wasEnergyShowed) 	
 			{
-				if (iaCard.energy > enemyCard.energy) { attribute = Globals.ENERGY; return attribute;} 
+				if (iaCard.energy > enemyCard.energy) { attribute = 'ENERGY'; return attribute;}
 			}
 				
 			if (enemyCard.wasPowerShowed) 		
 			{
-				if (iaCard.power > enemyCard.power) { attribute = Globals.POWER; return attribute;} 
+				if (iaCard.power > enemyCard.power) { attribute = 'POWER'; return attribute;}
 			}
 			
 			if (iaCard.power > iaCard.energy && iaCard.power > iaCard.attack && !enemyCard.wasPowerShowed)
 			{
-				attribute = Globals.POWER
+				attribute = 'POWER';
 			}
 			else if (iaCard.energy > iaCard.power && iaCard.energy > iaCard.attack && !enemyCard.wasEnergyShowed)
 			{
-				attribute = Globals.ENERGY
+				attribute = 'ENERGY';
 			}
 			else if (iaCard.attack > iaCard.power && iaCard.attack > iaCard.energy && !enemyCard.wasAttackShowed )
 			{
-				attribute = Globals.ATTACK
+				attribute = 'ATTACK';
 			}
 			else
 			{
@@ -173,17 +159,17 @@ import minimax.*;
 				
 				switch (enemyCard.lastAttributeShowed) 
 				{
-					case Globals.POWER:
-						features = [Globals.ATTACK, Globals.ENERGY];
-						break;
-					case Globals.ENERGY:
-						features = [Globals.ATTACK, Globals.POWER];
-						break;
-					case Globals.ATTACK:
-						features = [Globals.POWER, Globals.ENERGY];
-						break;
-					default:
-						features = [Globals.ATTACK, Globals.POWER, Globals.ENERGY]
+//					case Globals.POWER:
+//						features = [Globals.ATTACK, Globals.ENERGY];
+//						break;
+//					case Globals.ENERGY:
+//						features = [Globals.ATTACK, Globals.POWER];
+//						break;
+//					case Globals.ATTACK:
+//						features = [Globals.POWER, Globals.ENERGY];
+//						break;
+//					default:
+//						features = [Globals.ATTACK, Globals.POWER, Globals.ENERGY]
 				}
 				
 				var index		: int 	= int((Math.random() * (features.length - 1)) + 0.5);
@@ -195,26 +181,26 @@ import minimax.*;
 		
 		public function recoverAttributeInfos () : void
 		{
-			//preenche atributos
-			var arrPiecesUser	: Array = InfoController.getInstance().playerOneInfo.team.cards;
-			aSum[Globals.POWER] = aSum[Globals.ENERGY] = aSum[Globals.ATTACK] = 0;
-			aMin[Globals.POWER] = aMin[Globals.ENERGY] = aMin[Globals.ATTACK] = 0xffffff;
-			aMax[Globals.POWER] = aMax[Globals.ENERGY] = aMax[Globals.ATTACK] = 0;
-			
-			//FIXME [03/12] uma distribuição mais homogênea
-			aValues[Globals.POWER] 	= [];
-			aValues[Globals.ENERGY] = [];
-			aValues[Globals.ATTACK] = [];
-			
-			for each ( var card : CardModel in arrPiecesUser )
-			{
-				if (card.type != Globals.CARD_PLAYER)
-					continue;
-				
-				aValues[Globals.POWER].push(card.power); aSum[Globals.POWER] += card.power; aMax[Globals.POWER] = card.power > aMax[Globals.POWER] ? card.power : aMax[Globals.POWER]; aMin[Globals.POWER] = card.power < aMin[Globals.POWER] ? card.power : aMin[Globals.POWER];
-				aValues[Globals.ENERGY].push(card.energy); aSum[Globals.ENERGY] += card.energy; aMax[Globals.ENERGY] = card.energy > aMax[Globals.ENERGY] ? card.energy : aMax[Globals.ENERGY]; aMin[Globals.ENERGY] = card.energy < aMin[Globals.ENERGY] ? card.energy : aMin[Globals.ENERGY];
-				aValues[Globals.ATTACK].push(card.attack); aSum[Globals.ATTACK] += card.attack; aMax[Globals.ATTACK] = card.attack > aMax[Globals.ATTACK] ? card.attack : aMax[Globals.ATTACK]; aMin[Globals.ATTACK] = card.attack < aMin[Globals.ATTACK] ? card.attack : aMin[Globals.ATTACK];
-			}
+//			//preenche atributos
+//			var arrPiecesUser	: Array = InfoController.getInstance().playerOneInfo.team.cards;
+//			aSum[Globals.POWER] = aSum[Globals.ENERGY] = aSum[Globals.ATTACK] = 0;
+//			aMin[Globals.POWER] = aMin[Globals.ENERGY] = aMin[Globals.ATTACK] = 0xffffff;
+//			aMax[Globals.POWER] = aMax[Globals.ENERGY] = aMax[Globals.ATTACK] = 0;
+//
+//			//FIXME [03/12] uma distribuição mais homogênea
+//			aValues[Globals.POWER] 	= [];
+//			aValues[Globals.ENERGY] = [];
+//			aValues[Globals.ATTACK] = [];
+//
+//			for each ( var card : Object in arrPiecesUser )
+//			{
+//				if (card.type != Globals.CARD_PLAYER)
+//					continue;
+//
+//				aValues[Globals.POWER].push(card.power); aSum[Globals.POWER] += card.power; aMax[Globals.POWER] = card.power > aMax[Globals.POWER] ? card.power : aMax[Globals.POWER]; aMin[Globals.POWER] = card.power < aMin[Globals.POWER] ? card.power : aMin[Globals.POWER];
+//				aValues[Globals.ENERGY].push(card.energy); aSum[Globals.ENERGY] += card.energy; aMax[Globals.ENERGY] = card.energy > aMax[Globals.ENERGY] ? card.energy : aMax[Globals.ENERGY]; aMin[Globals.ENERGY] = card.energy < aMin[Globals.ENERGY] ? card.energy : aMin[Globals.ENERGY];
+//				aValues[Globals.ATTACK].push(card.attack); aSum[Globals.ATTACK] += card.attack; aMax[Globals.ATTACK] = card.attack > aMax[Globals.ATTACK] ? card.attack : aMax[Globals.ATTACK]; aMin[Globals.ATTACK] = card.attack < aMin[Globals.ATTACK] ? card.attack : aMin[Globals.ATTACK];
+//			}
 		}
 		
 		public function getAttributeValue ( attribute : String ) : int
@@ -228,51 +214,51 @@ import minimax.*;
 			
 			switch (_maxDepth) 
 			{
-				case Globals.IA_DUMMIE:
-					rand = -2 + Math.random() * 8;
-					break;
-				case Globals.IA_MEDIUM:
-					rand = -4 + Math.random() * 12;
-					break;
-				case Globals.IA_EXPERT:
-					rand = -5 + Math.random() * 15;
-					break;
+//				case Globals.IA_DUMMIE:
+//					rand = -2 + Math.random() * 8;
+//					break;
+//				case Globals.IA_MEDIUM:
+//					rand = -4 + Math.random() * 12;
+//					break;
+//				case Globals.IA_EXPERT:
+//					rand = -5 + Math.random() * 15;
+//					break;
 			}
 			
 			//FIXME[03/12]  sort
 //			trace (".... " + rand);
-			aValues[Globals.POWER] 	= ArrayUtil.sort(aValues[Globals.POWER]);
-			aValues[Globals.ENERGY] = ArrayUtil.sort(aValues[Globals.ENERGY]);
-			aValues[Globals.ATTACK] = ArrayUtil.sort(aValues[Globals.ATTACK]);
+//			aValues[Globals.POWER] 	= ArrayUtil.sort(aValues[Globals.POWER]);
+//			aValues[Globals.ENERGY] = ArrayUtil.sort(aValues[Globals.ENERGY]);
+//			aValues[Globals.ATTACK] = ArrayUtil.sort(aValues[Globals.ATTACK]);
 			
 			//pool c/ random
 			switch (attribute) 
 			{
-				case Globals.POWER:
+				case 'POWER':
 //					min 	= aMin[Globals.POWER];
 //					max 	= aMax[Globals.POWER];
-					sum		= (aValues[Globals.POWER] as Array).pop();
-					sum 	= sum + rand;
+//					sum		= (aValues[Globals.POWER] as Array).pop();
+//					sum 	= sum + rand;
 //					sum 	= (Math.random() * (max - min)) - (max - min)/4;
 //					sum 	= sum > aSum[Globals.POWER] ? aSum[Globals.POWER] : sum;
 //					sum 	= min + sum;
 //					aSum[Globals.POWER] -= sum;
 					break;
-				case Globals.ENERGY:
+				case 'ENERGY':
 //					min 	= aMin[Globals.ENERGY];
-					max 	= aMax[Globals.ENERGY];
-					sum		= (aValues[Globals.ENERGY] as Array).pop();
-					sum 	= sum + rand;
+//					max 	= aMax[Globals.ENERGY];
+//					sum		= (aValues[Globals.ENERGY] as Array).pop();
+//					sum 	= sum + rand;
 //					sum 	= (Math.random() * (max - min)) - (max - min)/4;
 //					sum 	= sum > aSum[Globals.ENERGY] ? aSum[Globals.ENERGY] : sum;
 //					sum 	= min + sum;
 //					aSum[Globals.ENERGY] -= sum;
 					break;
-				case Globals.ATTACK:
+				case 'ATTACK':
 //					min 	= aMin[Globals.ATTACK];
 //					max 	= aMax[Globals.ATTACK];
-					sum		= (aValues[Globals.ATTACK] as Array).pop();
-					sum 	= sum + rand;
+//					sum		= (aValues[Globals.ATTACK] as Array).pop();
+//					sum 	= sum + rand;
 //					sum 	= (Math.random() * (max - min)) - (max - min)/4;
 //					sum 	= sum > aSum[Globals.ATTACK] ? aSum[Globals.ATTACK] : sum;
 //					sum 	= min + sum;
@@ -287,9 +273,9 @@ import minimax.*;
 			
 			//TODO implement risk strategies (protect more trap than flag)
 			var type 		: int 		= int(Math.random() * 10);
-			var cardID      : int         = (InfoController.getInstance().playerTwoInfo.teamId == Globals.HUMAN) ? 1 : 13;
-			var arrCards	: Array		= [];
-			var game 		: Warland 	= _gameRef;
+//			var cardID      : int         = (InfoController.getInstance().playerTwoInfo.teamId == Globals.HUMAN) ? 1 : 13;
+//			var arrCards	: Array		= [];
+//			var game 		: Object 	= _gameRef;
 			
 			//flag
 			var lucky 		: int 	= int (Math.random() * 10);
@@ -309,9 +295,9 @@ import minimax.*;
 			}
 			
 			//posFlag
-			arrCards.push({x:posFlagX, y:posFlagY});
-			game.addPiece(posFlagX, posFlagY, InfoController.getInstance().playerTwoInfo.team.searchCardById(cardID), Globals.ID_PLAYER_TWO);
-			cardID++;
+//			arrCards.push({x:posFlagX, y:posFlagY});
+//			game.addPiece(posFlagX, posFlagY, InfoController.getInstance().playerTwoInfo.team.searchCardById(cardID), Globals.ID_PLAYER_TWO);
+//			cardID++;
 			
 			var rangeMultiplyerOffset : int = 1;
 			
@@ -327,40 +313,40 @@ import minimax.*;
 			var arrTraps	 : Array 	= [];
 			var arrPoss 	: Array 	= _gameRef.board.possibleMoves(posFlagX, posFlagY, 1 + int(Math.random() * 2), 5);
 			var pos			: Object	= arrPoss[int(Math.random() * arrPoss.length)];
-			arrCards.push({x:pos.x, y:pos.y});
-			arrTraps.push({x:pos.x, y:pos.y});
-			game.addPiece(pos.x, pos.y, InfoController.getInstance().playerTwoInfo.team.searchCardById(cardID), Globals.ID_PLAYER_TWO);
-			cardID++;
+//			arrCards.push({x:pos.x, y:pos.y});
+//			arrTraps.push({x:pos.x, y:pos.y});
+//			game.addPiece(pos.x, pos.y, InfoController.getInstance().playerTwoInfo.team.searchCardById(cardID), Globals.ID_PLAYER_TWO);
+//			cardID++;
 			
 			//posTrap2
 			arrPoss = _gameRef.board.possibleMoves(posFlagX, posFlagY, 1 + int(Math.random() * 2), 5);
 			pos		= arrPoss[int(Math.random() * arrPoss.length)];
-			arrCards.push({x:pos.x, y:pos.y});
-			arrTraps.push({x:pos.x, y:pos.y});
-			game.addPiece(pos.x, pos.y, InfoController.getInstance().playerTwoInfo.team.searchCardById(cardID), Globals.ID_PLAYER_TWO);
-			cardID++;
+//			arrCards.push({x:pos.x, y:pos.y});
+//			arrTraps.push({x:pos.x, y:pos.y});
+//			game.addPiece(pos.x, pos.y, InfoController.getInstance().playerTwoInfo.team.searchCardById(cardID), Globals.ID_PLAYER_TWO);
+//			cardID++;
 			
 			var cardSelected 	: Object;
 			var rand 			: int = int(Math.random() * 2);
 			
-			for (var i:int = 0; i < Globals.ENEMIES_PER_TEAM; i++) 
-			{
-				for (var j:int = 0; j < arrCards.length; j++) 
-				{
-					//arrPoss = _gameRef.board.possibleMoves(arrCards[j].x, arrCards[j].y, rangeMultiplyerOffset, 5);
-					arrPoss = _gameRef.board.possibleMoves(arrTraps[rand].x, arrTraps[rand].y, rangeMultiplyerOffset, 5);
-					if (arrPoss.length > 0)
-					{
-						cardSelected = arrCards[j];
-						break;
-					}
-				}
-				
-				pos		= arrPoss[int(Math.random() * arrPoss.length)];
-				arrCards.push({x:pos.x, y:pos.y});
-				game.addPiece(pos.x, pos.y, InfoController.getInstance().playerTwoInfo.team.searchCardById(cardID), Globals.ID_PLAYER_TWO);
-				cardID++;
-			}
+//			for (var i:int = 0; i < Globals.ENEMIES_PER_TEAM; i++)
+//			{
+//				for (var j:int = 0; j < arrCards.length; j++)
+//				{
+//					arrPoss = _gameRef.board.possibleMoves(arrCards[j].x, arrCards[j].y, rangeMultiplyerOffset, 5);
+//					arrPoss = _gameRef.board.possibleMoves(arrTraps[rand].x, arrTraps[rand].y, rangeMultiplyerOffset, 5);
+//					if (arrPoss.length > 0)
+//					{
+//						cardSelected = arrCards[j];
+//						break;
+//					}
+//				}
+//
+//				pos		= arrPoss[int(Math.random() * arrPoss.length)];
+//				arrCards.push({x:pos.x, y:pos.y});
+//				game.addPiece(pos.x, pos.y, InfoController.getInstance().playerTwoInfo.team.searchCardById(cardID), Globals.ID_PLAYER_TWO);
+//				cardID++;
+//			}
 		}
 		
 		// ___________________________________________________________________ PRIVATE METHODS
@@ -399,85 +385,85 @@ import minimax.*;
 			}
 		}
 		
-		private function cleanWeights( node : TreeNode ):void
-		{
-			if (!node.isLeaf())
-			{
-				IATreeNode(node.data).newWeight = -0xffffff;
-			}
-		}
+//		private function cleanWeights( node : TreeNode ):void
+//		{
+//			if (!node.isLeaf())
+//			{
+//				IATreeNode(node.data).newWeight = -0xffffff;
+//			}
+//		}
 		
-		private function processNodeWeights( node : TreeNode ):void
-		{
-			var changeValues 	: Boolean 	= false;
-			
-			if (node.parent == null) { return; }
-			
-			if ( IATreeNode(node.parent.data).turnId == MAX)
-			{			
-				changeValues = (IATreeNode(node.data).weight > IATreeNode(node.parent.data).weight);
-			}
-			else
-			{
-				changeValues = (IATreeNode(node.data).weight < IATreeNode(node.parent.data).weight || IATreeNode(node.parent.data).weight == -0xffffff);
-			}
-			
-			if (changeValues)
-			{
-				IATreeNode(node.parent.data).newWeight = IATreeNode(node.data).weight;
-					
-				if (node.parent.isRoot())
-				{
-					IATreeNode(node.parent.data).addResults(IATreeNode(node.data));
-				}
-			}
-		}
+//		private function processNodeWeights( node : TreeNode ):void
+//		{
+//			var changeValues 	: Boolean 	= false;
+//
+//			if (node.parent == null) { return; }
+//
+//			if ( IATreeNode(node.parent.data).turnId == MAX)
+//			{
+//				changeValues = (IATreeNode(node.data).weight > IATreeNode(node.parent.data).weight);
+//			}
+//			else
+//			{
+//				changeValues = (IATreeNode(node.data).weight < IATreeNode(node.parent.data).weight || IATreeNode(node.parent.data).weight == -0xffffff);
+//			}
+//
+//			if (changeValues)
+//			{
+//				IATreeNode(node.parent.data).newWeight = IATreeNode(node.data).weight;
+//
+//				if (node.parent.isRoot())
+//				{
+//					IATreeNode(node.parent.data).addResults(IATreeNode(node.data));
+//				}
+//			}
+//		}
 		
-		private function minimaxValues(parentNode : TreeNode, idMiniMax : int, alpha : int = 0, beta : int = 0):void
-		{
-			if (parentNode.depth == maxDepth || gameEnded(IATreeNode(parentNode.data)))
-			{
-				//return evalGameState(game, MAX);
-			}
-			else
-			{
-				var childNode   	: TreeNode;
-				var iaNode			: IATreeNode;
-				var lastNode		: IATreeNode = null;	
-				var bestValue		: int;
-				
-				for each (var i : String in IATreeNode(parentNode.data).actionList)
-				{
-					iaNode			= new IATreeNode( i, getPlayerAnalytics(idMiniMax), getPlayerAnalytics(idMiniMax, true), parentNode, idMiniMax);
-					iaNode.addResults(IASituation(_hashActions.find(i)).evaluate(iaNode));
-					childNode 		= new TreeNode(iaNode, parentNode);
-					
-					//Alpha-Beta cut
-					if (iaNode.parent != null && lastNode != null)
-					{
-						if (iaNode.parent.idMiniMax == MINI)
-						{
-							if (lastNode.weight < iaNode.weight)
-								iaNode.alphaBetaCut = true;
-							if (lastNode.weight > iaNode.weight)
-								lastNode.alphaBetaCut = true;
-						}
-						else
-						{
-							if (lastNode.weight > iaNode.weight)
-								iaNode.alphaBetaCut = true;
-							if (lastNode.weight < iaNode.weight)
-								lastNode.alphaBetaCut = true;
-						}
-					}
-					
-					lastNode = iaNode;
-					
-					if (!iaNode.alphaBetaCut)
-						minimaxValues(childNode, idMiniMax == MAX ? MINI : MAX, alpha, beta);
-				}
-			}
-		}
+//		private function minimaxValues(parentNode : TreeNode, idMiniMax : int, alpha : int = 0, beta : int = 0):void
+//		{
+//			if (parentNode.depth == maxDepth || gameEnded(IATreeNode(parentNode.data)))
+//			{
+//				return evalGameState(game, MAX);
+//			}
+//			else
+//			{
+//				var childNode   	: TreeNode;
+//				var iaNode			: IATreeNode;
+//				var lastNode		: IATreeNode = null;
+//				var bestValue		: int;
+//
+//				for each (var i : String in IATreeNode(parentNode.data).actionList)
+//				{
+//					iaNode			= new IATreeNode( i, getPlayerAnalytics(idMiniMax), getPlayerAnalytics(idMiniMax, true), parentNode, idMiniMax);
+//					iaNode.addResults(IASituation(_hashActions.find(i)).evaluate(iaNode));
+//					childNode 		= new TreeNode(iaNode, parentNode);
+//
+//					//Alpha-Beta cut
+//					if (iaNode.parent != null && lastNode != null)
+//					{
+//						if (iaNode.parent.idMiniMax == MINI)
+//						{
+//							if (lastNode.weight < iaNode.weight)
+//								iaNode.alphaBetaCut = true;
+//							if (lastNode.weight > iaNode.weight)
+//								lastNode.alphaBetaCut = true;
+//						}
+//						else
+//						{
+//							if (lastNode.weight > iaNode.weight)
+//								iaNode.alphaBetaCut = true;
+//							if (lastNode.weight < iaNode.weight)
+//								lastNode.alphaBetaCut = true;
+//						}
+//					}
+//
+//					lastNode = iaNode;
+//
+//					if (!iaNode.alphaBetaCut)
+//						minimaxValues(childNode, idMiniMax == MAX ? MINI : MAX, alpha, beta);
+//				}
+//			}
+//		}
 		
 		private function gameEnded( node : IATreeNode ):Boolean
 		{
@@ -485,26 +471,12 @@ import minimax.*;
 		}
 		
 		// ___________________________________________________________________ EVENTS
-		public function processCommand(p_ev:BoardEvent):void
-		{
-			//trace ("[LOG][BOARD].msg == " + p_ev.error);
-		}
 	}
 }
 
-/**
- * Each one will have 5 steps at first, and each setp has as best value 10 and worst 0
- * We have 2 pattern steps that evaluate if the action will turn the situaction vulnerable or if will win the game
- * At this point we can evaluate the best action to choose
- */
-
-import game.controllers.game.GameIAController;
-import game.core.Globals;
-import game.ia.IATreeNode;
-import game.ia.IASituation;
-import game.ia.Analytics;
-import game.models.CardModel;
-import game.ia.DecisionMaster;
+import com.filipesilvestrim.ai.minimax.Analytics;
+import com.filipesilvestrim.ai.minimax.IASituation;
+import com.filipesilvestrim.ai.minimax.IATreeNode;
 
 /**
  * Walk in direction to an battle
@@ -522,7 +494,7 @@ class AttackEnemyPiece implements IASituation
 		var finalMove		: Object;
 		var weight			: int;
 		
-		GameIAController.getInstance().ia.board = node.board;
+//		GameIAController.getInstance().ia.board = node.board;
 		
 		/**
 		 * Inicio das analises
@@ -559,18 +531,18 @@ class AttackEnemyPiece implements IASituation
 		}
 		//weight = bestAttack;
 		
-		var finalEvaluate : Object = DecisionMaster.getInstance().evaluate(listWeights, node.board);
-		selection 	= finalEvaluate.selection;
-		finalMove.x = finalEvaluate.x;
-		finalMove.y = finalEvaluate.y;
-		weight		= finalEvaluate.weight;
+//		var finalEvaluate : Object = DecisionMaster.getInstance().evaluate(listWeights, node.board);
+//		selection 	= finalEvaluate.selection;
+//		finalMove.x = finalEvaluate.x;
+//		finalMove.y = finalEvaluate.y;
+//		weight		= finalEvaluate.weight;
 		
 		/**
 		 * Selecao e retorno
 		 */
-		node.board.unselect();
-		node.board.select(selection.x, selection.y, player.actualPlayerId);
-		node.board.move(finalMove.x, finalMove.y);
+//		node.board.unselect();
+//		node.board.select(selection.x, selection.y, player.actualPlayerId);
+//		node.board.move(finalMove.x, finalMove.y);
 		
 		return { selected:selection, x:finalMove.x, y:finalMove.y, weight:weight };
 	}
@@ -592,7 +564,7 @@ class ProtectOwnPiece implements IASituation
 		var finalMove		: Object;
 		var weight			: int;
 		
-		GameIAController.getInstance().ia.board = node.board;
+//		GameIAController.getInstance().ia.board = node.board;
 		
 		/**
 		 * Inicio das analises
@@ -628,18 +600,18 @@ class ProtectOwnPiece implements IASituation
 			listWeights.push( { piece:selection.piece, selection:selection, enemy:enemy, player:player, x:finalMove.x, y:finalMove.y, weight:bestAttack } );
 		}
 		
-		var finalEvaluate : Object = DecisionMaster.getInstance().evaluate(listWeights, node.board);
-		selection 	= finalEvaluate.selection;
-		finalMove.x = finalEvaluate.x;
-		finalMove.y = finalEvaluate.y;
-		weight		= finalEvaluate.weight;
+//		var finalEvaluate : Object = DecisionMaster.getInstance().evaluate(listWeights, node.board);
+//		selection 	= finalEvaluate.selection;
+//		finalMove.x = finalEvaluate.x;
+//		finalMove.y = finalEvaluate.y;
+//		weight		= finalEvaluate.weight;
 		
 		/**
 		 * Selecao e retorno
 		 */
-		node.board.unselect();
-		node.board.select(selection.x, selection.y, player.actualPlayerId);
-		node.board.move(finalMove.x, finalMove.y);
+//		node.board.unselect();
+//		node.board.select(selection.x, selection.y, player.actualPlayerId);
+//		node.board.move(finalMove.x, finalMove.y);
 		
 		return { selected:selection, x:finalMove.x, y:finalMove.y, weight:weight };
 	}

@@ -7,7 +7,7 @@
  */
 package com.filipesilvestrim.ai.fsm {
 public interface IState {
-    function get allowedFrom()  : Vector.<IState>;
+    function get allowedFrom()  : Vector.<Class>;
     function register(ref:StateMachine, ...args) : void;
     function enter(time:int)    : void;
     function exit(time:int)     : void;

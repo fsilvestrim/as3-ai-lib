@@ -5,12 +5,7 @@
 
 package com.filipesilvestrim.ai.minimax
 {
-	import game.controllers.game.GameplayController;
-	import game.core.Board;
-	import game.core.Globals;
-	import game.models.CardModel;
-
-	public class Analytics 
+public class Analytics
 	{
 		// ___________________________________________________________________ CONSTANTS
 		//number of tiles (normal) that defines the near offset
@@ -30,7 +25,7 @@ package com.filipesilvestrim.ai.minimax
 		private var _actionList					: Array;
 		
 		// ___________________________________________________________________ INSTANCE PROPERTIES
-		private var _board						: Board;
+		private var _board						: Object;//Board
 		private var _relatedFlag				: Object;
 		private var _globalAnalytics			: GlobalAnalytics;
 		
@@ -79,12 +74,12 @@ package com.filipesilvestrim.ai.minimax
 			
 			for each ( var o : Object in potentialFlags) 
 			{
-				if (CardModel(_board.getPiece(o.x, o.y)).flagPotential > flag.flagPotential)
+				if ((_board.getPiece(o.x, o.y)).flagPotential > flag.flagPotential)
 				{
 					flag 				= o;
-					flag.flagPotential 	= CardModel(_board.getPiece(o.x, o.y)).flagPotential;
+					flag.flagPotential 	= (_board.getPiece(o.x, o.y)).flagPotential;
 				}
-				else if (CardModel(_board.getPiece(o.x, o.y)).flagPotential == flag.flagPotential && flag.flagPotential != 0)
+				else if ((_board.getPiece(o.x, o.y)).flagPotential == flag.flagPotential && flag.flagPotential != 0)
 				{
 					arrAleat.push(o);
 				}
@@ -154,9 +149,9 @@ package com.filipesilvestrim.ai.minimax
 			return _actionList = getAllPossibleActions(); 
 		}
 		
-		public function get board():Board { return _board; }
+		public function get board():Object { return _board; }
 		
-		public function set board(value:Board):void 
+		public function set board(value:Object):void
 		{
 			_board = value;
 		}
@@ -221,7 +216,7 @@ package com.filipesilvestrim.ai.minimax
 		public function wasLastMove ( piece : Object, move : Object) : Object
 		{
 			var newMove 	: Object 		= null;
-			var card		: CardModel 	= CardModel(piece.piece);
+			var card		: Object 	    = (piece.piece);//Object
 			
 			if (card.memoryMoves.length == 0) { return newMove; }
 			
@@ -248,12 +243,12 @@ package com.filipesilvestrim.ai.minimax
 		public function hasEnemyInRatio ( piece : Object, finalMove : Object = null) : Object
 		{
 			var enemyRadio 		: Object 	= null;
-			var pieceCard		: CardModel = CardModel(piece.piece);
-			var possibleCard	: CardModel;
+			var pieceCard		: Object = Object(piece.piece);
+			var possibleCard	: Object;
 			
-			for each ( var mov : Object in CardModel(piece.piece).arrPossibleMoves)
+			for each ( var mov : Object in Object(piece.piece).arrPossibleMoves)
 			{
-				possibleCard = CardModel(_board.getPiece(mov.x, mov.y));
+				possibleCard = Object(_board.getPiece(mov.x, mov.y));
 				if ( possibleCard != null ) 
 					if (possibleCard.hasMoved)
 					{
@@ -279,10 +274,10 @@ package com.filipesilvestrim.ai.minimax
 		{
 			var enemyRadio : Object = null;
 			
-			for each ( var mov : Object in CardModel(piece.piece).arrPossibleMoves)
+			for each ( var mov : Object in Object(piece.piece).arrPossibleMoves)
 			{
-				if (CardModel(_board.getPiece(mov.x, mov.y)) != null)
-					if (CardModel(_board.getPiece(mov.x, mov.y)).hasMoved)
+				if (Object(_board.getPiece(mov.x, mov.y)) != null)
+					if (Object(_board.getPiece(mov.x, mov.y)).hasMoved)
 						enemyRadio = moveToObjective(piece, mov);
 			}          
 			
@@ -291,7 +286,7 @@ package com.filipesilvestrim.ai.minimax
 		
 		public function moveToObjective (from : Object, to : Object) : Object
 		{
-			var card : CardModel = from.piece;
+			var card : Object = from.piece;
 			var move : Object = { };
 			move.x = 0;
 			move.y = 0;
@@ -305,9 +300,9 @@ package com.filipesilvestrim.ai.minimax
 			my = dy != 0 ? dy / Math.abs(dy) : 0;
 			
 			var hasTrap : Boolean = false;
-			if (CardModel(_board.getPiece(from.x + mx, from.y + my)) != null)
+			if (Object(_board.getPiece(from.x + mx, from.y + my)) != null)
 			{
-				if (CardModel(_board.getPiece(from.x + mx, from.y + my)).isTrap)
+				if (Object(_board.getPiece(from.x + mx, from.y + my)).isTrap)
 				{
 					hasTrap = true;
 				}
@@ -357,14 +352,14 @@ package com.filipesilvestrim.ai.minimax
 			{
 				if ( forceJumpFlag)
 				{
-					if (CardModel(_board.getPiece(i.x, i.y)) != null)
-						if (CardModel(_board.getPiece(i.x, i.y)).isTrap)
+					if (Object(_board.getPiece(i.x, i.y)) != null)
+						if (Object(_board.getPiece(i.x, i.y)).isTrap)
 							continue;
-					if (CardModel(from.piece).memoryMoves.length > 0)
-						if (CardModel(from.piece).memoryMoves[CardModel(from.piece).memoryMoves.length - 1] == i)
+					if (Object(from.piece).memoryMoves.length > 0)
+						if (Object(from.piece).memoryMoves[Object(from.piece).memoryMoves.length - 1] == i)
 							continue;
-					if (CardModel(from.piece).memoryMoves.length > 1)
-						if (CardModel(from.piece).memoryMoves[CardModel(from.piece).memoryMoves.length - 2] == i)
+					if (Object(from.piece).memoryMoves.length > 1)
+						if (Object(from.piece).memoryMoves[Object(from.piece).memoryMoves.length - 2] == i)
 							continue;
 				}
 				
@@ -432,9 +427,9 @@ package com.filipesilvestrim.ai.minimax
 				if (i.x == o.x && i.y == o.y)
 					continue;
 				
-				if (CardModel(_board.getPiece(i.x, i.y)) != null)
+				if (Object(_board.getPiece(i.x, i.y)) != null)
 				{
-					if (CardModel(_board.getPiece(i.x, i.y)).isTrap)
+					if (Object(_board.getPiece(i.x, i.y)).isTrap)
 						continue;
 				}
 				
@@ -521,11 +516,11 @@ package com.filipesilvestrim.ai.minimax
 		 */
 		private function setPiecesProperties(array:Array) : void
 		{
-			var card 		: CardModel;
+			var card 		: Object;
 			
 			for each (var i : Object in array)
 			{
-				card = CardModel(_board.getPiece(i.x, i.y));
+				card = Object(_board.getPiece(i.x, i.y));
 				card.addPossibleMoves(_board.possibleMoves(i.x, i.y));
 			}
 		}
@@ -539,10 +534,10 @@ package com.filipesilvestrim.ai.minimax
 		 */
 		private function filterMovables(item:*, index:int, array:Array) : Boolean
 		{
-			var card 		: CardModel 	= CardModel(_board.getPiece(item.x, item.y));
+			var card 		: Object 	= Object(_board.getPiece(item.x, item.y));
 			card.addPossibleMoves(_board.possibleMoves(item.x, item.y));
 			
-			return (card.type == Globals.CARD_PLAYER &&  card.possibleMovesLenght > 0);
+			return (card.type == 'CARD_PLAYER' &&  card.possibleMovesLenght > 0);
 		}
 		
 		/**
@@ -554,7 +549,7 @@ package com.filipesilvestrim.ai.minimax
 		 */
 		private function filterUnmoveds(item:*, index:int, array:Array) : Boolean
 		{
-			var card 		: CardModel 	= CardModel(_board.getPiece(item.x, item.y));
+			var card 		: Object 	= Object(_board.getPiece(item.x, item.y));
 			card.flagPotential = analiseFlagWeight(card);
 			return (!card.hasMoved && !card.isTrap && card.flagPotential != 0);
 		}
@@ -568,7 +563,7 @@ package com.filipesilvestrim.ai.minimax
 		 */
 		private function filterPotentialAttacks(item:*, index:int, array:Array) : Boolean
 		{
-			var card 		: CardModel 	= CardModel(_board.getPiece(item.x, item.y));
+			var card 		: Object 	= Object(_board.getPiece(item.x, item.y));
 			return (card.hasMoved && card.flagPotential == 0);
 		}
 		
@@ -582,7 +577,7 @@ package com.filipesilvestrim.ai.minimax
 		 */
 		private function filterMoveds(item:*, index:int, array:Array) : Boolean
 		{
-			var card 		: CardModel 	= CardModel(_board.getPiece(item.x, item.y));
+			var card 		: Object 	= Object(_board.getPiece(item.x, item.y));
 			return (card.hasMoved);
 		}
 		
@@ -595,9 +590,9 @@ package com.filipesilvestrim.ai.minimax
 		 */
 		private function filterNearFlag(item:*, index:int, array:Array) : Boolean
 		{
-			var card 		: CardModel 	= CardModel(_board.getPiece(item.x, item.y));
+			var card 		: Object 	= Object(_board.getPiece(item.x, item.y));
 			var hasFlag 	: Boolean		= false;
-			var cardEnemy	: CardModel;
+			var cardEnemy	: Object;
 			
 			for (var x:int = item.x - OFFSET_PROXIMIT; x <= item.x + OFFSET_PROXIMIT; x++)
 			for (var y:int = item.y - OFFSET_PROXIMIT; y <= item.y + OFFSET_PROXIMIT; y++)
@@ -610,9 +605,9 @@ package com.filipesilvestrim.ai.minimax
 					{
 						if 
 						(
-							cardEnemy.type == Globals.CARD_FLAG
+							cardEnemy.type == 'CARD_FLAG'
 							&& cardEnemy.id != card.id
-							&& GameplayController.getInstance().getTeamByCard(card) != GameplayController.getInstance().getTeamByCard(cardEnemy)
+//							&& GameplayController.getInstance().getTeamByCard(card) != GameplayController.getInstance().getTeamByCard(cardEnemy)
 						)
 						{
 							hasFlag = true;
@@ -634,8 +629,8 @@ package com.filipesilvestrim.ai.minimax
 		 */
 		private function filterNearEnemies(item:*, index:int, array:Array) : Boolean
 		{
-			var card 		: CardModel 	= CardModel(_board.getPiece(item.x, item.y));
-			var cardEnemy	: CardModel;
+			var card 		: Object 	= Object(_board.getPiece(item.x, item.y));
+			var cardEnemy	: Object;
 			var hasEnemy 	: Boolean		= false;
 			_arrEnemiesNearFound			= [];
 			
@@ -650,10 +645,10 @@ package com.filipesilvestrim.ai.minimax
 					{
 						if 
 						(
-							cardEnemy.type == Globals.CARD_PLAYER
+							cardEnemy.type == 'CARD_PLAYER'
 							&& _arrEnemiesNearFound.indexOf(cardEnemy) == -1
 							&& cardEnemy.id != card.id
-							&& GameplayController.getInstance().getTeamByCard(card) != GameplayController.getInstance().getTeamByCard(cardEnemy)
+//							&& GameplayController.getInstance().getTeamByCard(card) != GameplayController.getInstance().getTeamByCard(cardEnemy)
 						)
 						{
 							_arrEnemiesNearFound.push(cardEnemy);
@@ -691,12 +686,12 @@ package com.filipesilvestrim.ai.minimax
 		private function getFlag () : Object
 		{
 			var arr 	: Array 	= _board.getPieceList(_actualPlayerId);
-			var card 	: CardModel = null;
+			var card 	: Object = null;
 			
 			for each (var o : Object in arr)
 			{
-				card = CardModel(_board.getPiece(o.x, o.y));
-				if (card.type == Globals.CARD_FLAG) { return o; }
+				card = Object(_board.getPiece(o.x, o.y));
+				if (card.type == 'CARD_FLAG') { return o; }
 			}
 			
 			return null;
@@ -711,12 +706,12 @@ package com.filipesilvestrim.ai.minimax
 		{
 			var arr 	: Array 	= _board.getPieceList(_actualPlayerId);
 			var traps 	: Array		= [];
-			var card 	: CardModel = null;
+			var card 	: Object = null;
 			
 			for each (var o : Object in arr)
 			{
-				card = CardModel(_board.getPiece(o.x, o.y));
-				if (card.type == Globals.CARD_TRAP) 
+				card = Object(_board.getPiece(o.x, o.y));
+				if (card.type == 'CARD_TRAP')
 				{ 
 					traps.push(card);
 				}
@@ -734,7 +729,7 @@ package com.filipesilvestrim.ai.minimax
 		private function averageBattlesToWinFlag( arr : Array, o : Object) : int 
 		{
 			var count 		: int = 0;
-			var card		: CardModel;
+			var card		: Object;
 			
 			for (var x:int = o.x - OFFSET_FLAG_BATTLE; x <= o.x + OFFSET_FLAG_BATTLE; x++)
 			for (var y:int = o.y - OFFSET_FLAG_BATTLE; y <= o.y + OFFSET_FLAG_BATTLE; y++)
@@ -766,7 +761,7 @@ package com.filipesilvestrim.ai.minimax
 		 */
 		public function getNumberOfMovesLackToFoundFlag( enemyFlag : Object ) : int
 		{
-			if (enemyFlag == null) {return Globals.BOARD_WIDTH}
+			if (enemyFlag == null) {return -1}
 			return averageMovesTo(movablePieces, enemyFlag);
 		}
 		
@@ -778,7 +773,7 @@ package com.filipesilvestrim.ai.minimax
 		 */
 		public function getNumberOfBattlesToWinToFlag ( enemyFlag : Object ) : int
 		{
-			if (enemyFlag == null) {return Globals.BOARD_WIDTH}
+			if (enemyFlag == null) {return -1}
 			return averageBattlesToWinFlag(movablePieces, enemyFlag);
 		}
 		
@@ -799,19 +794,19 @@ package com.filipesilvestrim.ai.minimax
 		 * @param	array
 		 * @return
 		 */
-		private function analiseFlagWeight(card : CardModel) : int
+		private function analiseFlagWeight(card : Object) : int
 		{
 			if (card.hasMoved || card.isTrap) return 0;
 			
 			var posDifCalc : int;
 			
-			if (_actualPlayerId == Globals.ID_PLAYER_ONE)
+			if (_actualPlayerId == 1)
 			{
-				return int(((card.position.y - 6) / 6) * 10) + (piecesInRange(_board.getPieceList(_actualPlayerId), card.position.x, card.position.y, 2) / 8);// + (Math.random() > .8 ? int(card.type == Globals.CARD_FLAG) * (Math.random() * 10) : 0);  + Math.abs(((5.5 - card.position.x)/6) * 5)
+				return int(((card.position.y - 6) / 6) * 10) + (piecesInRange(_board.getPieceList(_actualPlayerId), card.position.x, card.position.y, 2) / 8);// + (Math.random() > .8 ? int(card.type == 'CARD_FLAG') * (Math.random() * 10) : 0);  + Math.abs(((5.5 - card.position.x)/6) * 5)
 			}
 			else
 			{
-				return int((card.position.y / 6) * 10) + (piecesInRange(_board.getPieceList(_actualPlayerId), card.position.x, card.position.y, 2) / 8);// + (Math.random() > .8 ? int(card.type == Globals.CARD_FLAG) * (Math.random() * 10) : 0);
+				return int((card.position.y / 6) * 10) + (piecesInRange(_board.getPieceList(_actualPlayerId), card.position.x, card.position.y, 2) / 8);// + (Math.random() > .8 ? int(card.type == 'CARD_FLAG') * (Math.random() * 10) : 0);
 			}
 			
 		}

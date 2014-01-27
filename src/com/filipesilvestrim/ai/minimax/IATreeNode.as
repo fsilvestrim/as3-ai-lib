@@ -7,12 +7,7 @@
 
 package com.filipesilvestrim.ai.minimax
 {
-import minimax.*;
-	import de.polygonal.ds.TreeNode;
-	import game.controllers.game.GameIAController;
-	import game.core.Board;
-
-	public class IATreeNode
+public class IATreeNode
 	{ 
 		// ___________________________________________________________________ CONSTANTS
 		
@@ -30,8 +25,8 @@ import minimax.*;
 		private var _ia					: IA;
 		private var _playerAnalytics	: Analytics;
 		private var _enemyAnalytics		: Analytics;
-		private var _board				: Board;
-		private var _associatedNode		: TreeNode;
+		private var _board				: Object;
+		private var _associatedNode		: Object;
 		private var _selected			: Object;
 		private var _data				: Object;
 		private var _parent				: IATreeNode;
@@ -40,7 +35,7 @@ import minimax.*;
 		public function get playerAnalytics()	:Analytics 	{ return _playerAnalytics; }
 		public function get enemyAnalytics()	:Analytics 	{ return _enemyAnalytics; }
 		public function get selected()			:Object 	{ return _selected; }
-		public function get board()				:Board 		{ return _board; }
+		public function get board()				:Object 		{ return _board; }
 		public function get action()			:String 	{ return _action; }
 		public function get actionList()		:Array 		{ return _actionList; }
 		public function get weight()			:int 		{ return _weight; }
@@ -63,18 +58,18 @@ import minimax.*;
 		
 		// ___________________________________________________________________ CONSTRUCTOR
 		
-		public function IATreeNode (action : String , playerAnalytics : Analytics, enemyAnalytics : Analytics, parentNode : TreeNode = null, idMiniMax : int = -1)
+		public function IATreeNode (action : String , playerAnalytics : Analytics, enemyAnalytics : Analytics, parentNode : Object = null, idMiniMax : int = -1)
 		{
 			_action				= action;
-			_parent				= parentNode != null ? parentNode.data : null;
+//			_parent				= parentNode != null ? parentNode.data : null;
 			_idMiniMax			= idMiniMax;
 			_playerAnalytics	= playerAnalytics;
 			_enemyAnalytics		= enemyAnalytics;
 			_turnId				= _playerAnalytics.actualPlayerId;
 			_actionList			= _playerAnalytics.actionList;
-			_board				= parentNode == null ? _playerAnalytics.board.deepClone() : IATreeNode(parentNode.data).board.deepClone();
-			_ia 				= GameIAController.getInstance().ia;
-			_board.addListener(GameIAController.getInstance().ia.processCommand);
+//			_board				= parentNode == null ? _playerAnalytics.board.deepClone() : IATreeNode(parentNode.data).board.deepClone();
+//			_ia 				= GameIAController.getInstance().ia;
+//			_board.addListener(GameIAController.getInstance().ia.processCommand);
 		}
 		
 		// ___________________________________________________________________ PUBLIC METHODS

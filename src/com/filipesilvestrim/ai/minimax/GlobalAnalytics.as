@@ -6,11 +6,7 @@
 
 package com.filipesilvestrim.ai.minimax
 {
-import minimax.*;
-	import game.core.Globals;
-	import game.models.CardModel;
-	
-	public class GlobalAnalytics 
+public class GlobalAnalytics
 	{
 		// ___________________________________________________________________ CONSTANTS
 		
@@ -97,7 +93,7 @@ import minimax.*;
 			
 			for each ( var $enemies : Object in _enemy.arrPotentialAttacks)
 			{
-				if (_player.board.isInsideRange(piece.x, piece.y, $enemies.x, $enemies.y, 5) && !CardModel($enemies.piece).isTrap)
+				if (_player.board.isInsideRange(piece.x, piece.y, $enemies.x, $enemies.y, 5) && !Object($enemies.piece).isTrap)
 					arrPiecesThatCahAttack.push($enemies);
 			}
 			
@@ -105,15 +101,15 @@ import minimax.*;
 			{
 				nCount++;
 				numberWon = 0;
-				if (CardModel(piece.piece).power > CardModel($objRelAttack.piece).power && CardModel($objRelAttack.piece).wasPowerShowed)
+				if (Object(piece.piece).power > Object($objRelAttack.piece).power && Object($objRelAttack.piece).wasPowerShowed)
 				{
 					numberWon++;
 				}
-				if (CardModel(piece.piece).energy > CardModel($objRelAttack.piece).energy && CardModel($objRelAttack.piece).wasEnergyShowed)
+				if (Object(piece.piece).energy > Object($objRelAttack.piece).energy && Object($objRelAttack.piece).wasEnergyShowed)
 				{
 					numberWon++;
 				}
-				if (CardModel(piece.piece).attack > CardModel($objRelAttack.piece).attack && CardModel($objRelAttack.piece).wasAttackShowed)
+				if (Object(piece.piece).attack > Object($objRelAttack.piece).attack && Object($objRelAttack.piece).wasAttackShowed)
 				{
 					numberWon++;
 				}
@@ -270,8 +266,8 @@ import minimax.*;
 				}
 			}
 			
-			if (pieceToProtect != null)
-				percentNumberOfNearEnemies = ((Globals.BOARD_WIDTH - _player.distance(piece, pieceToProtect)) / Globals.BOARD_WIDTH) * 100;
+//			if (pieceToProtect != null)
+//				percentNumberOfNearEnemies = ((Globals.BOARD_WIDTH - _player.distance(piece, pieceToProtect)) / Globals.BOARD_WIDTH) * 100;
 			
 			//trace( "percentNumberOfNearEnemies : " + percentNumberOfNearEnemies );
 			
@@ -344,7 +340,7 @@ import minimax.*;
 			//# - posso perder a peca depois da jogada que farei?
 			var percentLostPieceNextMove 	: int	= 0;
 			var arrMoves 					: Array = _player.board.possibleMoves(piece.x + move.x, piece.y + move.y);
-			var possibleEnemy				: CardModel;
+			var possibleEnemy				: Object;
 			
 			for each ( var $pieceLose : Object in arrMoves)
 			{
@@ -367,8 +363,8 @@ import minimax.*;
 			//---------------------------------------------------------------------------------------
 			//# - vou vencer o fazendo a proxima jogada?
 			var percentWinGameNextMove 	: int 		= 0;
-			var card 					: CardModel = CardModel(piece.piece);
-			var possibleFlag			: CardModel;
+			var card 					: Object = Object(piece.piece);
+			var possibleFlag			: Object;
 			
 			for each ( var $nextMovet : Object in card.arrPossibleMoves)
 			{

@@ -31,7 +31,7 @@ public class StateMachine {
     public function nextState (iState:Class)    : void { _next = _all[iState]; }
     public function update()                    : void { if(!paused && _curr != null) _curr.update(getTimer()); }
 
-    private function changeTo (next:IState)     : void { if(next.allowedFrom.indexOf(Class(getDefinitionByName(getQualifiedClassName(next))))==-1) { if(error != null) error(new Error('State not allowed!')) else return;};  if(_curr != null) { IState(_prev = _curr).exit(getTimer()); if(exit != null) exit(_prev); } ((_curr = next) as IState).enter(getTimer()); if(change!=null) change(_curr); }
+    private function changeTo (next:IState)     : void { if(next.allowedFrom.indexOf(Class(getDefinitionByName(getQualifiedClassName(_curr))))==-1) { if(error != null) error(new Error('State not allowed!')) else return;};  if(_curr != null) { IState(_prev = _curr).exit(getTimer()); if(exit != null) exit(_prev); } ((_curr = next) as IState).enter(getTimer()); if(change!=null) change(_curr); }
     public function changeTo (iState:Class)     : void { private::changeTo(_all[iState]); }
 
     public function gotoPrev()                  : void { private::changeTo(_prev); }
