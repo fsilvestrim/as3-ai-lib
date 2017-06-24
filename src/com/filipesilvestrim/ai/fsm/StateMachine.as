@@ -15,6 +15,7 @@ import flash.utils.getDefinitionByName;
 import flash.utils.getTimer;
 
 public class StateMachine {
+    private var _seq    : Array = new Array();
     private var _all    : Dictionary = new Dictionary();
     private var _curr   : IState = null;
     private var _prev   : IState = null;
@@ -25,20 +26,44 @@ public class StateMachine {
     public var change   : Function = null;
     public var error    : Function = null;
 
+
+    private function get cIdx():int { return _seq.indexOf(_curr); }
     public function get curr():IState { return _curr; }
     public function get prev():IState { return _prev; }
-    public function get next():IState { return _next; }
+    public function get next():IState { return _next || _all[Math.min(cIdx+1, _seq.length-1)]; }
 
     final public function nextState (iState:Class)  : void { _next = _all[iState]; }
     public function update()                        : void { if(!paused && _curr != null) _curr.update(getTimer()); }
 
-    final private function changeTo (next:IState)   : void { if(next.allowedFrom.indexOf(Class(getDefinitionByName(getQualifiedClassName(_curr))))==-1) { if(error != null) error(new Error('State not allowed!')) else return;};  if(_curr != null) { IState(_prev = _curr).exit(getTimer()); if(exit != null) exit(_prev); } ((_curr = next) as IState).enter(getTimer()); if(change!=null) change(_curr); }
+    final private function changeTo (next:IState)   : void {
+        if (next == null) {
+            return;
+        }
+
+        if(_curr != null) {
+            if(next.allowedFrom != null && Class(getDefinitionByName(getQualifiedClassName(_curr))) in next.allowedFrom) {
+                if(error != null)   error(new Error('State not allowed!'));
+                else                return;
+            }
+
+            (_prev = _curr).exit(getTimer());
+
+            if(exit != null) exit(_prev);
+        }
+
+        trace(this, " changing state from ", _curr, " to ", next);
+
+        (_curr = next).enter(getTimer());
+
+        if(change!=null) change(_curr);
+    }
+
     final public function changeTo (iState:Class)   : void { private::changeTo(_all[iState]); }
 
-    public function gotoPrev()                      : void { private::changeTo(_prev); }
-    public function gotoNext()                      : void { private::changeTo(_next); }
+    final public function gotoPrev()                : void { private::changeTo(prev); }
+    final public function gotoNext()                : void { private::changeTo(next); }
 
-    final public function registerClass(iState:Class,...args)  : void { _all[iState] = new iState(); (_all[iState] as IState).register.apply(null,[this].concat(args)); }
-    final public function registerInstance(inst:IState, iState:Class, ...args)  : void { _all[iState] = inst; inst.register.apply(null,[this].concat(args)); }
+    final public function registerClass(iState:Class,...args)  : void { _all[iState] = new iState(); (_all[iState] as IState).register.apply(null,[this].concat(args)); _seq.push(_all[iState]); }
+    final public function registerInstance(inst:IState, iState:Class, ...args)  : void { _all[iState] = inst; inst.register.apply(null,[this].concat(args)); _seq.push(_all[iState]);}
 }
 }
